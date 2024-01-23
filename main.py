@@ -33,3 +33,29 @@ snake_speed = 15  # Скорость змейки
 change_direction = "RIGHT"
 fruit = {"x": random.randrange(1, screen_size // cell_size) * cell_size,
          "y": random.randrange(1, screen_size // cell_size) * cell_size}
+
+
+# Функции для каждого из уровней
+def level_1():
+    global snake_speed, obstacles
+    snake_speed = 75
+    obstacles = []
+
+
+def level_2():
+    global snake_speed, obstacles
+    snake_speed = 3
+    obstacles = [{'x': 100, 'y': 200}, {'x': 200, 'y': 200}]
+
+
+def level_3():
+    global snake_speed, obstacles
+    snake_speed = 3  # Та же скорость, что и на уровне 2
+    # Больше препятствий
+    obstacles = [{'x': 100, 'y': 200}, {'x': 200, 'y': 200}, {'x': 300, 'y': 100}]
+
+
+def level_4():
+    global snake_speed, obstacles
+    snake_speed = 5  # Еще более высокая скорость
+    obstacles = []  # Нет препятствий

@@ -1,4 +1,5 @@
 import pygame
+import sys
 import random
 
 # Инициализация Pygame
@@ -59,3 +60,35 @@ def level_4():
     global snake_speed, obstacles
     snake_speed = 5  # Еще более высокая скорость
     obstacles = []  # Нет препятствий
+
+
+def level_5():
+    global snake_speed, obstacles, special_fruit_active
+    snake_speed = 10
+    obstacles = [{'x': 50, 'y': 100}, {'x': 150, 'y': 300}, {'x': 250, 'y': 150}]
+    special_fruit_active = True  # Активация специальных фруктов на этом уровне
+
+
+def main_menu():
+    screen.fill(SAND_COLOR)
+    font = pygame.font.SysFont(None, 36)
+    title_text = font.render('Главное меню', True, BLACK)
+    start_text = font.render('Начать игру', True, BLACK)
+    exit_text = font.render('Выход', True, BLACK)
+
+    title_rect = title_text.get_rect(center=(screen_size / 2, 100))
+    start_rect = start_text.get_rect(center=(screen_size / 2, 200))
+    exit_rect = exit_text.get_rect(center=(screen_size / 2, 250))
+
+    screen.blit(title_text, title_rect)
+    screen.blit(start_text, start_rect)
+    screen.blit(exit_text, exit_rect)
+
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if start_rect.collidepoint(pygame.mouse.get_pos()):
+                global game_state
+                game_state = LEVEL_SELECTION
+            elif exit_rect.collidepoint(pygame.mouse.get_pos()):
+                pygame.quit()
+                sys.exit()

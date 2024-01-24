@@ -177,3 +177,37 @@ def main_menu():
             elif exit_rect.collidepoint(pygame.mouse.get_pos()):
                 pygame.quit()
                 sys.exit() # Завершаем игру
+
+def level_selection():
+    try:
+        screen.fill(SAND_COLOR)
+        font = pygame.font.SysFont(None, 36)
+
+        level_texts = []
+        for i in range(1, 6):
+            level_text = font.render(f'Уровень {i}', True, BLACK)
+            level_rect = level_text.get_rect(center=(screen_size / 2, 100 + i * 50))
+            level_texts.append((level_text, level_rect))
+            screen.blit(level_text, level_rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i, (_, rect) in enumerate(level_texts):
+                    if rect.collidepoint(pygame.mouse.get_pos()):
+                        global game_state
+                        current_level = i + 1  # Установка текущего уровня
+                        game_state = GAME_PLAYING
+                        # Вызов функции для настройки выбранного уровня
+                        if current_level == 1:
+                            level_1()
+                        elif current_level == 2:
+                            level_2()
+                        elif current_level == 3:
+                            level_3()
+                        elif current_level == 4:
+                            level_4()
+                        elif current_level == 5:
+                            level_5()
+    except Exception as e:
+        print(f"Ошибка в функции level_selection: {e}")
+        raise

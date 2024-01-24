@@ -313,3 +313,17 @@ def update_score():
     score_text = font.render(f'Очки: {score}', True, BLACK)
     # Размещение текста на экране
     screen.blit(score_text, (10, 10))
+
+# Функция для перезагрузки игры
+def reset_game():
+    global snake, score, fruit, game_state, snake_speed, change_direction, obstacles, special_fruit_active
+    # Сброс переменных игры
+    score = 0
+    snake_speed = 10  # Скорость змейки по умолчанию
+    change_direction = "RIGHT"
+    special_fruit_active = False
+    snake = [{"x": 100, "y": 100}, {"x": 90, "y": 100}, {"x": 80, "y": 100}]
+    fruit = {"x": random.randrange(1, screen_size // cell_size) * cell_size,
+             "y": random.randrange(1, screen_size // cell_size) * cell_size}
+    obstacles = []  # Сброс препятствий
+    game_state = GAME_PLAYING  # Начать игру заново

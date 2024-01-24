@@ -211,3 +211,105 @@ def level_selection():
     except Exception as e:
         print(f"Ошибка в функции level_selection: {e}")
         raise
+
+def game_playing():
+    try:
+        global game_state, score, snake, fruit, special_fruit_counter, special_fruit_active, change_direction, obstacles
+
+        # Обработка событий клавиш
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_UP or event.key == pygame.K_w) and change_direction != "DOWN":
+                    change_direction = "UP"
+                elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and change_direction != "UP":
+                    change_direction = "DOWN"
+                elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and change_direction != "RIGHT":
+                    change_direction = "LEFT"
+                elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and change_direction != "LEFT":
+                    change_direction = "RIGHT"
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Отрисовка фона
+        screen.fill(SAND_COLOR)
+        draw_grid()  # Рисуем сетку
+
+        # Отрисовка препятствий
+        for obstacle in obstacles:
+            screen.blit(wall_block_img, (obstacle['x'] * cell_size, obstacle['y'] * cell_size))
+
+        # Обновление координат головы змеи
+        if change_direction == "UP":
+            snake[0]["y"] -= cell_size
+        elif change_direction == "DOWN":
+            snake[0]["y"] += cell_size
+        elif change_direction == "LEFT":
+            snake[0]["x"] -= cell_size
+        elif change_direction == "RIGHT":
+            snake[0]["x"] += cell_size
+
+        # Проверка столкновения с границами экрана
+        if snake[0]["x"] >= screen_size:
+            snake[0]["x"] = 0
+        elif snake[0]["x"] < 0:
+            snake[0]["x"] = screen_size - cell_size
+        if snake[0]["y"] >= screen_size:
+            snake[0]["y"] = 0
+        elif snake[0]["y"] < 0:
+            snake[0]["y"] = screen_size - cell_size
+
+        # Проверка столкновения с самой собой
+        for segment in snake[1:]:
+            if segment["x"] == snake[0]["x"] and segment["y"] == snake[0]["y"]:
+                game_state = GAME_OVER
+
+        # Проверка поедания фрукта
+        if snake[0]["x"] == fruit["x"] and snake[0]["y"] == fruit["y"]:
+            score += 10
+            special_fruit_counter += 1
+            snake.append({"x": -1, "y": -1})
+            fruit = {"x": random.randrange(1, screen_size // cell_size) * cell_size,
+                     "y": random.randrange(1, screen_size // cell_size) * cell_size}
+            # Воспроизведение звука при съедании фрукта
+            eat_sound.play()
+
+        # Обновление координат тела змеи
+        for i in range(len(snake) - 1, 0, -1):
+            snake[i]["x"] = snake[i - 1]["x"]
+            snake[i]["y"] = snake[i - 1]["y"]
+
+        # Рисуем голову змеи
+        if len(snake) > 0:
+            head_position = (snake[0]['x'], snake[0]['y'])
+            screen.blit(snake_head_img, head_position)
+
+        # Рисуем тело змеи
+        for segment in snake[1:]:
+            screen.blit(snake_body_img, (segment['x'], segment['y']))
+
+        # Рисуем фрукт
+        screen.blit(current_fruit_img, (fruit["x"], fruit["y"]))
+
+        # Проверка столкновений с препятствиями
+        for obstacle in obstacles:
+            if snake[0]['x'] == obstacle['x'] * cell_size and snake[0]['y'] == obstacle['y'] * cell_size:
+                game_state = GAME_OVER
+
+        # Обновление и отображение счета
+        update_score()
+
+        # Обновление экрана
+        pygame.display.flip()
+    except Exception as e:
+        print(f"Ошибка в функции game_playing: {e}")
+        raise
+
+# Функция для обновления счета
+def update_score():
+    # Установка шрифта для отображения счета
+    font = pygame.font.SysFont(None, 36)
+    # Создание текста для отображения
+    score_text = font.render(f'Очки: {score}', True, BLACK)
+    # Размещение текста на экране
+    screen.blit(score_text, (10, 10))

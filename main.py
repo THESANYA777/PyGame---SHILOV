@@ -103,7 +103,16 @@ fruit = {"x": random.randrange(1, screen_size // cell_size) * cell_size,
          "y": random.randrange(1, screen_size // cell_size) * cell_size}
 
 
+def draw_grid():
+    # Рисуем сетку на заднем фоне
+    for x in range(0, screen_size, cell_size):
+        for y in range(0, screen_size, cell_size):
+            rect = pygame.Rect(x, y, cell_size, cell_size)
+            pygame.draw.rect(screen, WHITE, rect, 1)
+
+
 # Функции для каждого из уровней
+# Обновляем функции уровней, чтобы они включали доступные фрукты
 def level_1():
     global snake_speed, obstacles
     snake_speed = 75
@@ -135,27 +144,36 @@ def level_5():
     obstacles = [{'x': 50, 'y': 100}, {'x': 150, 'y': 300}, {'x': 250, 'y': 150}]
     special_fruit_active = True  # Активация специальных фруктов на этом уровне
 
-
+# Функция для отображения экрана "Главное меню"
 def main_menu():
+    # Очищаем экран и устанавливаем цвет фона
     screen.fill(SAND_COLOR)
+    # Создаем объект шрифта для текста
     font = pygame.font.SysFont(None, 36)
+    # Создаем текст "Главное меню"
     title_text = font.render('Главное меню', True, BLACK)
+    # Создаем текст "Начать игру" для кнопки "Начать игру"
     start_text = font.render('Начать игру', True, BLACK)
+    # Создаем текст "Выход" для кнопки "Выход"
     exit_text = font.render('Выход', True, BLACK)
 
+    # Получаем прямоугольники, в которых будет отображаться текст
     title_rect = title_text.get_rect(center=(screen_size / 2, 100))
     start_rect = start_text.get_rect(center=(screen_size / 2, 200))
     exit_rect = exit_text.get_rect(center=(screen_size / 2, 250))
 
+    # Отображаем текст на экране
     screen.blit(title_text, title_rect)
     screen.blit(start_text, start_rect)
     screen.blit(exit_text, exit_rect)
 
+    # Обработка событий мыши
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
+            # Если произошло нажатие мыши
             if start_rect.collidepoint(pygame.mouse.get_pos()):
                 global game_state
-                game_state = LEVEL_SELECTION
+                game_state = LEVEL_SELECTION # Переходим в экран выбора уровня
             elif exit_rect.collidepoint(pygame.mouse.get_pos()):
                 pygame.quit()
-                sys.exit()
+                sys.exit() # Завершаем игру

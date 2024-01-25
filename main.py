@@ -327,3 +327,40 @@ def reset_game():
              "y": random.randrange(1, screen_size // cell_size) * cell_size}
     obstacles = []  # Сброс препятствий
     game_state = GAME_PLAYING  # Начать игру заново
+
+# Функция для отображения экрана "Игра окончена"
+def game_over():
+    # Очищаем экран и устанавливаем цвет фона
+    screen.fill(SAND_COLOR)
+
+    # Создаем объект шрифта для текста
+    font = pygame.font.SysFont(None, 36)
+
+    # Создаем текст "Игра окончена. Очки:" с текущим счетом
+    game_over_text = font.render(f'Игра окончена. Очки: {score}', True, BLACK)
+
+    # Создаем текст "Играть снова" для кнопки "Играть снова"
+    retry_text = font.render('Играть снова', True, BLACK)
+
+    # Создаем текст "Выйти в меню" для кнопки "Выйти в меню"
+    menu_text = font.render('Выйти в меню', True, BLACK)
+
+    # Получаем прямоугольники, в которых будет отображаться текст
+    game_over_rect = game_over_text.get_rect(center=(screen_size / 2, 100))
+    retry_rect = retry_text.get_rect(center=(screen_size / 2, 200))
+    menu_rect = menu_text.get_rect(center=(screen_size / 2, 250))
+
+    # Отображаем текст на экране
+    screen.blit(game_over_text, game_over_rect)
+    screen.blit(retry_text, retry_rect)
+    screen.blit(menu_text, menu_rect)
+
+    # Обработка событий мыши
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Если произошло нажатие мыши
+            if retry_rect.collidepoint(pygame.mouse.get_pos()):
+                reset_game()  # Сбрасываем игру для начала новой игры
+            elif menu_rect.collidepoint(pygame.mouse.get_pos()):
+                global game_state
+                game_state = MAIN_MENU  # Возвращаемся в главное меню

@@ -394,3 +394,5 @@ while True:
     pygame.display.flip()
 
 pygame.quit()
+
+# теперь надо делать презентацию

@@ -114,35 +114,43 @@ def draw_grid():
 # Функции для каждого из уровней
 # Обновляем функции уровней, чтобы они включали доступные фрукты
 def level_1():
-    global snake_speed, obstacles
-    snake_speed = 75
-    obstacles = []
+    global snake_speed, obstacles, current_fruit_img
+    snake_speed = 10
+    obstacles = []  # Нет препятствий на уровне 1
+    current_fruit_img = random.choice(fruit_images_by_level[1])
 
 
 def level_2():
-    global snake_speed, obstacles
-    snake_speed = 3
-    obstacles = [{'x': 100, 'y': 200}, {'x': 200, 'y': 200}]
+    global snake_speed, obstacles, current_fruit_img
+    snake_speed = 10
+    obstacles = [{'x': 5, 'y': 5}, {'x': 8, 'y': 8}]  # Пример координат препятствий на уровне 2
+    current_fruit_img = random.choice(fruit_images_by_level[2])
 
 
 def level_3():
-    global snake_speed, obstacles
-    snake_speed = 3  # Та же скорость, что и на уровне 2
-    # Больше препятствий
-    obstacles = [{'x': 100, 'y': 200}, {'x': 200, 'y': 200}, {'x': 300, 'y': 100}]
+    global snake_speed, obstacles, current_fruit_img
+    snake_speed = 10
+    obstacles = [{'x': 3, 'y': 3}, {'x': 6, 'y': 6}, {'x': 9, 'y': 9}]  # Пример координат препятствий на уровне 3
+    current_fruit_img = random.choice(fruit_images_by_level[3])
 
 
 def level_4():
-    global snake_speed, obstacles
-    snake_speed = 5  # Еще более высокая скорость
-    obstacles = []  # Нет препятствий
+    global snake_speed, obstacles, current_fruit_img
+    snake_speed = 10
+    obstacles = [{'x': 2, 'y': 2}, {'x': 5, 'y': 5}, {'x': 8, 'y': 8},
+                 {'x': 11, 'y': 11}]  # Пример координат препятствий на уровне 4
+    current_fruit_img = random.choice(fruit_images_by_level[4])
 
 
 def level_5():
-    global snake_speed, obstacles, special_fruit_active
+    global snake_speed, obstacles, current_fruit_img
     snake_speed = 10
-    obstacles = [{'x': 50, 'y': 100}, {'x': 150, 'y': 300}, {'x': 250, 'y': 150}]
-    special_fruit_active = True  # Активация специальных фруктов на этом уровне
+    obstacles = [
+        {'x': 1, 'y': 1}, {'x': 3, 'y': 3}, {'x': 5, 'y': 5}, {'x': 7, 'y': 7},
+        {'x': 9, 'y': 9}, {'x': 11, 'y': 11}, {'x': 13, 'y': 13}
+    ]  # Пример координат препятствий на уровне 5
+    current_fruit_img = random.choice(fruit_images_by_level[5])
+
 
 # Функция для отображения экрана "Главное меню"
 def main_menu():
@@ -173,10 +181,11 @@ def main_menu():
             # Если произошло нажатие мыши
             if start_rect.collidepoint(pygame.mouse.get_pos()):
                 global game_state
-                game_state = LEVEL_SELECTION # Переходим в экран выбора уровня
+                game_state = LEVEL_SELECTION  # Переходим в экран выбора уровня
             elif exit_rect.collidepoint(pygame.mouse.get_pos()):
                 pygame.quit()
-                sys.exit() # Завершаем игру
+                sys.exit()  # Завершаем игру
+
 
 def level_selection():
     try:
@@ -211,6 +220,7 @@ def level_selection():
     except Exception as e:
         print(f"Ошибка в функции level_selection: {e}")
         raise
+
 
 def game_playing():
     try:
@@ -305,6 +315,7 @@ def game_playing():
         print(f"Ошибка в функции game_playing: {e}")
         raise
 
+
 # Функция для обновления счета
 def update_score():
     # Установка шрифта для отображения счета
@@ -313,6 +324,7 @@ def update_score():
     score_text = font.render(f'Очки: {score}', True, BLACK)
     # Размещение текста на экране
     screen.blit(score_text, (10, 10))
+
 
 # Функция для перезагрузки игры
 def reset_game():
@@ -327,6 +339,7 @@ def reset_game():
              "y": random.randrange(1, screen_size // cell_size) * cell_size}
     obstacles = []  # Сброс препятствий
     game_state = GAME_PLAYING  # Начать игру заново
+
 
 # Функция для отображения экрана "Игра окончена"
 def game_over():
@@ -364,3 +377,20 @@ def game_over():
             elif menu_rect.collidepoint(pygame.mouse.get_pos()):
                 global game_state
                 game_state = MAIN_MENU  # Возвращаемся в главное меню
+
+
+# Главный игровой цикл
+while True:
+    clock.tick(snake_speed)
+
+    if game_state == MAIN_MENU:
+        main_menu()
+    elif game_state == LEVEL_SELECTION:
+        level_selection()
+    elif game_state == GAME_PLAYING:
+        game_playing()
+    elif game_state == GAME_OVER:
+        game_over()
+    pygame.display.flip()
+
+pygame.quit()

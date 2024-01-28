@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import csv
 
 # Инициализация Pygame
 pygame.init()
@@ -150,6 +151,141 @@ def level_5():
         {'x': 9, 'y': 9}, {'x': 11, 'y': 11}, {'x': 13, 'y': 13}
     ]  # Пример координат препятствий на уровне 5
     current_fruit_img = random.choice(fruit_images_by_level[5])
+
+
+def authenticate():
+    login = ''
+    password = ''
+    show_password = False
+    login_active = False
+    password_active = False
+    # Создаем два шрифта: один для обычного текста, другой для сообщения об ошибке
+    font = pygame.font.Font(None, 32)
+    error_font = pygame.font.Font(None, 24)  # Меньший шрифт для сообщений об ошибках
+
+    # Значение screen_size является шириной экрана
+    screen_size = 500  # Пример ширины экрана
+    screen = pygame.display.set_mode((screen_size, screen_size))  # Устанавливаем размер окна
+
+    message = ''  # Сообщение об ошибке или статусе
+
+    login_rect = pygame.Rect(120, 100, 200, 32)  # Поле ввода логина
+    password_rect = pygame.Rect(120, 150, 200, 32)  # Поле ввода пароля
+
+    # Увеличиваем ширину прямоугольника кнопки
+    show_password_rect = pygame.Rect(325, 150, 120, 32)  # Увеличенная ширина
+
+    # Функция для проверки существующих учетных данных
+    def check_existing_credentials(login, password):
+        try:
+            with open('credentials.csv', 'r', newline='', encoding='utf-8') as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    if row[0] == login:
+                        return row[1] == password
+                return None  # Логин не найден
+        except FileNotFoundError:
+            return None  # Файл не найден
+
+    while True:
+        screen.fill((255, 255, 255))
+
+        # Отрисовка текстовых меток для полей ввода
+        login_label = font.render("Логин:", True, BLACK)
+        password_label = font.render("Пароль:", True, BLACK)
+        screen.blit(login_label, (login_rect.x - 80, login_rect.y + 5))
+        screen.blit(password_label, (password_rect.x - 100, password_rect.y + 5))
+
+        # Отрисовка прямоугольников для ввода
+        pygame.draw.rect(screen, BLACK, login_rect, 2)
+        pygame.draw.rect(screen, BLACK, password_rect, 2)
+        pygame.draw.rect(screen, BLACK, show_password_rect)
+
+        # Отображение текста кнопки
+        show_password_text = font.render("Показать" if not show_password else "Скрыть", True, WHITE)
+        screen.blit(show_password_text, (show_password_rect.x + 5, show_password_rect.y + 5))
+
+        # Отображение введенного логина и пароля
+        login_surf = font.render(login, True, BLACK)
+        password_display = password if show_password else '*' * len(password)
+        password_surf = font.render(password_display, True, BLACK)
+        screen.blit(login_surf, (login_rect.x + 5, login_rect.y + 5))
+        screen.blit(password_surf, (password_rect.x + 5, password_rect.y + 5))
+
+        # Отображение сообщения об ошибке меньшим шрифтом
+        if message:
+            message_surf = error_font.render(message, True, RED)
+            # Центрируем сообщение по горизонтали
+            message_rect = message_surf.get_rect(center=(screen_size / 2, 280))
+            screen.blit(message_surf, message_rect.topleft)
+
+        for event in pygame.event.get():
+            # Проверяем события Pygame
+            if event.type == pygame.QUIT:
+                # Если событие - запрос на выход (например, закрытие окна)
+                pygame.quit()  # Закрыть Pygame
+                sys.exit()  # Выход из программы
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Если событие - нажатие кнопки мыши
+                if login_rect.collidepoint(event.pos):
+                    # Если клик мыши внутри прямоугольника логина
+                    login_active = True  # Активировать поле ввода логина
+                    password_active = False  # Деактивировать поле ввода пароля
+                elif password_rect.collidepoint(event.pos):
+                    # Если клик мыши внутри прямоугольника пароля
+                    password_active = True  # Активировать поле ввода пароля
+                    login_active = False  # Деактивировать поле ввода логина
+                elif show_password_rect.collidepoint(event.pos):
+                    # Если клик мыши внутри прямоугольника кнопки "Показать/Скрыть пароль"
+                    show_password = not show_password  # Переключить отображение пароля
+                else:
+                    # Если клик вне полей ввода и кнопки
+                    login_active = False  # Деактивировать поле ввода логина
+                    password_active = False  # Деактивировать поле ввода пароля
+            if event.type == pygame.KEYDOWN:
+                # Если событие - нажатие клавиши на клавиатуре
+                if login_active:
+                    # Если активно поле ввода логина
+                    if event.key == pygame.K_BACKSPACE:
+                        # Если нажата клавиша Backspace
+                        login = login[:-1]  # Удалить последний символ из логина
+                    else:
+                        login += event.unicode  # Добавить введенный символ к логину
+                elif password_active:
+                    # Если активно поле ввода пароля
+                    if event.key == pygame.K_BACKSPACE:
+                        # Если нажата клавиша Backspace
+                        password = password[:-1]  # Удалить последний символ из пароля
+                    else:
+                        password += event.unicode  # Добавить введенный символ к паролю
+
+                if event.key == pygame.K_RETURN and login and password:
+                    # Если нажата клавиша Enter и введены логин и пароль
+                    existing_password = check_existing_credentials(login, password)
+                    # Проверяем, существует ли уже такой логин с паролем
+                    if existing_password is not None:
+                        # Если логин уже существует
+                        if existing_password:
+                            # Если пароль правильный
+                            return True
+                        else:
+                            # Если пароль неправильный
+                            message = "Этот логин уже существует с другим паролем."
+                    else:
+                        # Если логин новый
+                        with open('credentials.csv', 'a', newline='', encoding='utf-8') as csvfile:
+                            writer = csv.writer(csvfile)
+                            writer.writerow([login, password])  # Запись логина и пароля в CSV
+                        message = "Новый пользователь успешно зарегистрирован."
+                        return True  # Возвращаем True при успешной регистрации
+
+            pygame.display.flip()  # Обновляем содержимое экрана
+            clock.tick(30)  # Ограничиваем частоту кадров
+
+    return False  # Возвращаем False, если аутентификация не была успешной
+
+
+authenticate()
 
 
 # Функция для отображения экрана "Главное меню"

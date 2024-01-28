@@ -17,7 +17,7 @@ SAND_COLOR = (194, 178, 128)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-screen_size = 400
+screen_size = 500
 # Определение размера клетки
 cell_size = 20
 current_level = 1  # Уровень по умолчанию
@@ -310,6 +310,12 @@ def main_menu():
     screen.blit(title_text, title_rect)
     screen.blit(start_text, start_rect)
     screen.blit(exit_text, exit_rect)
+
+    # изменяеи размеры эмодзи и располагаем под кнопкой выхода
+    new_width = snake_head_img.get_width() * 5
+    new_height = snake_head_img.get_height() * 5
+    trans_head = pygame.transform.scale(snake_head_img, (new_width, new_height))
+    screen.blit(trans_head, (200, 300))
 
     # Обработка событий мыши
     for event in pygame.event.get():

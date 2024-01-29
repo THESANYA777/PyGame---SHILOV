@@ -35,6 +35,9 @@ try:
     wall_block_img = pygame.image.load('wall_block.png')
     # Звук съедания фрукта
     eat_sound = pygame.mixer.Sound('fruit_eat_sound.wav')
+
+    head = pygame.image.load('head.png')
+    head = pygame.transform.scale(head, (20, 20))
 except pygame.error as e:
     print(f"Ошибка при загрузке ресурсов: {e}")
     sys.exit()
@@ -431,14 +434,14 @@ def game_playing():
             snake[i]["x"] = snake[i - 1]["x"]
             snake[i]["y"] = snake[i - 1]["y"]
 
-        # Рисуем голову змеи
-        if len(snake) > 0:
-            head_position = (snake[0]['x'], snake[0]['y'])
-            screen.blit(snake_head_img, head_position)
-
         # Рисуем тело змеи
         for segment in snake[1:]:
             screen.blit(snake_body_img, (segment['x'], segment['y']))
+
+        # Рисуем голову змеи
+        if len(snake) > 0:
+            head_position = (snake[0]['x'], snake[0]['y'])
+            screen.blit(head, head_position)
 
         # Рисуем фрукт
         screen.blit(current_fruit_img, (fruit["x"], fruit["y"]))
